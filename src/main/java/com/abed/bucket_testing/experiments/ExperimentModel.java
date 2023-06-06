@@ -19,21 +19,26 @@ import java.util.Set;
 @Table(name = "experiments")
 public class ExperimentModel {
 
-  @Id @GeneratedValue(strategy = GenerationType.AUTO) private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
 
-  @Column(name = "name", nullable = false) private String name;
+  @Column(name = "name", nullable = false)
+  private String name;
 
-  @Column(name = "description", nullable = false) private String description;
+  @Column(name = "description", nullable = false)
+  private String description;
 
   @Column(name = "is_published", nullable = true)
-  private Boolean IsPublished = false;
+  private Boolean isPublished = false;
 
   @OneToMany
   @JoinColumn(name = "experiment_id")
   @JsonIgnore
   private Set<VariantModel> variants;
 
-  public ExperimentModel() {}
+  public ExperimentModel() {
+  }
 
   public ExperimentModel(String name, String description) {
     this.name = name;
@@ -46,25 +51,41 @@ public class ExperimentModel {
         ", description: " + description;
   }
 
-  public Long getId() { return id; }
+  public Long getId() {
+    return id;
+  }
 
-  public String getName() { return name; }
+  public String getName() {
+    return name;
+  }
 
-  public String getDescription() { return description; }
+  public String getDescription() {
+    return description;
+  }
 
-  public Boolean getIsPublished() { return IsPublished; }
+  public Boolean getIsPublished() {
+    return isPublished;
+  }
 
-  public Set<VariantModel> getVariants() { return variants; }
+  public Set<VariantModel> getVariants() {
+    return variants;
+  }
 
-  public void setId(Long id) { this.id = id; }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-  public void setName(String name) { this.name = name; }
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public void setDescription(String description) {
     this.description = description;
   }
 
-  public void setIsPublished(Boolean isPublished) { IsPublished = isPublished; }
+  public void setIsPublished(Boolean isPublished) {
+    isPublished = isPublished;
+  }
 
   public void setVariants(Set<VariantModel> variants) {
     this.variants = variants;

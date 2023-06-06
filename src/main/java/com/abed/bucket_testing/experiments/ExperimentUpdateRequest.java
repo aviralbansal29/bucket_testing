@@ -37,7 +37,8 @@ public class ExperimentUpdateRequest {
   }
 
   FieldError validateUniqueName() {
-    if (experimentRepository.existsByCaseInsensitiveName(getName())) {
+    if (experimentRepository.existsByCaseInsensitiveNameAndNotId(this.id,
+                                                                 getName())) {
       return new FieldError("ExperimentModel", "name", "Duplicate entry.");
     }
     return null;

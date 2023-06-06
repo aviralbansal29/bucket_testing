@@ -21,6 +21,11 @@ public interface ExperimentRepository
       "SELECT exists(SELECT 1 from ExperimentModel where lower(name) = lower(:name))")
   boolean
   existsByCaseInsensitiveName(String name);
+
+  @Query(
+      "SELECT exists(SELECT 1 from ExperimentModel where lower(name) = lower(:name) AND id <> :id)")
+  boolean
+  existsByCaseInsensitiveNameAndNotId(Long id, String name);
 }
 
 interface ExperimentRepositoryCustom {
