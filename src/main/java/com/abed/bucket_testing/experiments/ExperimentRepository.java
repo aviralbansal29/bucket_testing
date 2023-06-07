@@ -10,22 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 /**
  * Manages repository for ExperimentModel
  */
+@Repository
 public interface ExperimentRepository
     extends JpaRepository<ExperimentModel, Long>, ExperimentRepositoryCustom {
 
-  @Query(
-      "SELECT exists(SELECT 1 from ExperimentModel where lower(name) = lower(:name))")
-  boolean
-  existsByCaseInsensitiveName(String name);
+  @Query("SELECT exists(SELECT 1 from ExperimentModel where lower(name) = lower(:name))")
+  boolean existsByCaseInsensitiveName(String name);
 
-  @Query(
-      "SELECT exists(SELECT 1 from ExperimentModel where lower(name) = lower(:name) AND id <> :id)")
-  boolean
-  existsByCaseInsensitiveNameAndNotId(Long id, String name);
+  @Query("SELECT exists(SELECT 1 from ExperimentModel where lower(name) = lower(:name) AND id <> :id)")
+  boolean existsByCaseInsensitiveNameAndNotId(Long id, String name);
 }
 
 interface ExperimentRepositoryCustom {
@@ -37,14 +35,14 @@ interface ExperimentRepositoryCustom {
  */
 class ExperimentRepositoryCustomImpl implements ExperimentRepositoryCustom {
 
-  @PersistenceContext private EntityManager entityManager;
+  @PersistenceContext
+  private EntityManager entityManager;
 
   @Override
   public List<ExperimentModel> findByCriteria(String nameSubString,
-                                              Boolean isPublished) {
+      Boolean isPublished) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-    CriteriaQuery<ExperimentModel> query =
-        cb.createQuery(ExperimentModel.class);
+    CriteriaQuery<ExperimentModel> query = cb.createQuery(ExperimentModel.class);
     Root<ExperimentModel> experiment = query.from(ExperimentModel.class);
 
     List<Predicate> predicates = new ArrayList<>();

@@ -24,10 +24,10 @@ public class ExperimentService {
     return experiment;
   }
 
-  public ListServiceResponse listExperiments(String nameSubString,
-      Boolean isPublished) {
+  public ListServiceResponse<ExperimentModel> listExperiments(String nameSubString, Boolean isPublished) {
     List<ExperimentModel> experiments = experimentRepository.findByCriteria(nameSubString, isPublished);
-    return new ListServiceResponse(experimentRepository.count(), experiments);
+    return new ListServiceResponse<ExperimentModel>(
+        experimentRepository.count(), experiments);
   }
 
   public ExperimentModel retrieveExperiment(long id) throws Exception {
@@ -45,6 +45,8 @@ public class ExperimentService {
     if (experiment.isEmpty()) {
       throw new NotFoundException();
     }
+    experiment.get().setName(req.getName());
+    experiment.get().setDescription(req.getDescription());
     return experimentRepository.save(experiment.get());
   }
 

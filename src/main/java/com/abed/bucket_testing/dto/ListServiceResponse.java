@@ -5,12 +5,12 @@ import java.util.List;
 /**
  * ListServiceResponse
  */
-public class ListServiceResponse {
+public class ListServiceResponse<T> {
 
   private long count;
-  private List<?> content;
+  private List<T> content;
 
-  public ListServiceResponse(long count, List<?> content) {
+  public ListServiceResponse(long count, List<T> content) {
     this.count = count;
     this.content = content;
   }
@@ -19,7 +19,7 @@ public class ListServiceResponse {
     return count;
   }
 
-  public List<?> getContent() {
+  public List<T> getContent() {
     return content;
   }
 }

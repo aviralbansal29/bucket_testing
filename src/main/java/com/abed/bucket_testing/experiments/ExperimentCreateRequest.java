@@ -2,7 +2,6 @@ package com.abed.bucket_testing.experiments;
 
 import com.abed.bucket_testing.annotations.FieldNotBlank;
 import com.abed.bucket_testing.exceptions.InvalidRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.FieldError;
 
 /**
@@ -10,19 +9,31 @@ import org.springframework.validation.FieldError;
  */
 public class ExperimentCreateRequest {
 
-  @FieldNotBlank private String name;
-  @FieldNotBlank private String description;
+  @FieldNotBlank
+  private String name;
+  @FieldNotBlank
+  private String description;
 
-  @Autowired ExperimentRepository experimentRepository;
+  private ExperimentRepository experimentRepository;
 
-  public String getName() { return name; }
+  public String getName() {
+    return name;
+  }
 
-  public String getDescription() { return description; }
+  public String getDescription() {
+    return description;
+  }
 
-  public void setName(String name) { this.name = name; }
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setExperimentRepository(ExperimentRepository experimentRepository) {
+    this.experimentRepository = experimentRepository;
   }
 
   public void Validate() throws InvalidRequestException {

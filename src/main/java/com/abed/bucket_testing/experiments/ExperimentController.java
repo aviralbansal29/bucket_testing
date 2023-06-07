@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,10 +20,13 @@ public class ExperimentController {
 
   @Autowired
   ExperimentService service;
+  @Autowired
+  ExperimentRepository experimentRepository;
 
   @RequestMapping(method = RequestMethod.POST, value = "/experiments")
   public ResponseEntity<ExperimentModel> createExperiment(@Valid @RequestBody ExperimentCreateRequest ex)
       throws Exception {
+    ex.setExperimentRepository(experimentRepository);
     return new ResponseEntity<ExperimentModel>(service.createExperiment(ex),
         HttpStatus.CREATED);
   }
@@ -31,9 +35,11 @@ public class ExperimentController {
   public ResponseEntity<List<ExperimentModel>> getExperiments(
       @RequestParam(name = "name", required = false) String nameSubString,
       @RequestParam(name = "is_published", required = false) Boolean isPublished) {
-    ListServiceResponse details = service.listExperiments(nameSubString, isPublished);
-    return new ResponseEntity<List<ExperimentModel>>(details.getContent(),
-        HttpStatus.OK);
+    ListServiceResponse<ExperimentModel> details = service.listExperiments(nameSubString, isPublished);
+    List<ExperimentModel> content = details.getContent();
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.set("X-Total-Count", Long.toString(details.getCount()));
+    return new ResponseEntity<>(content, responseHeaders, HttpStatus.OK);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/experiments/{id}")
@@ -53,6 +59,7 @@ public class ExperimentController {
       @Valid @RequestBody ExperimentUpdateRequest req)
       throws Exception {
     try {
+      req.setExperimentRepository(experimentRepository);
       return new ResponseEntity<ExperimentModel>(
           service.updateExperiment(id, req), HttpStatus.OK);
     } catch (NotFoundException n) {
