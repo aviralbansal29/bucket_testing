@@ -1,6 +1,7 @@
 package com.abed.bucket_testing.experiments;
 
 import com.abed.bucket_testing.dto.ListServiceResponse;
+import com.abed.bucket_testing.variants.VariantService;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,13 @@ public class ExperimentService {
     req.Validate();
     ExperimentModel experiment = new ExperimentModel(req.getName(), req.getDescription());
     experimentRepository.save(experiment);
+    VariantService variantService = new VariantService();
+    variantService.createControlVariant(experiment.getId());
     return experiment;
   }
 
-  public ListServiceResponse<ExperimentModel> listExperiments(String nameSubString, Boolean isPublished) {
-    List<ExperimentModel> experiments = experimentRepository.findByCriteria(nameSubString, isPublished);
+  public ListServiceResponse<ExperimentModel> listExperiments(Boolean isPublished, String query) {
+    List<ExperimentModel> experiments = experimentRepository.findByCriteria(query, isPublished);
     return new ListServiceResponse<ExperimentModel>(
         experimentRepository.count(), experiments);
   }

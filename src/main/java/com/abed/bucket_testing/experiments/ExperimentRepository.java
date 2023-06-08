@@ -48,7 +48,8 @@ class ExperimentRepositoryCustomImpl implements ExperimentRepositoryCustom {
     List<Predicate> predicates = new ArrayList<>();
 
     if (nameSubString != null && !nameSubString.isEmpty()) {
-      predicates.add(cb.like(experiment.get("name"), nameSubString));
+      predicates.add(cb.like(cb.lower(experiment.get("name")),
+          "%" + nameSubString.toLowerCase() + "%"));
     }
 
     if (isPublished != null) {

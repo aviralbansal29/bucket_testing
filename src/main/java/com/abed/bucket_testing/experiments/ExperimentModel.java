@@ -29,7 +29,7 @@ public class ExperimentModel {
   @Column(name = "description", nullable = false)
   private String description;
 
-  @Column(name = "is_published", nullable = true)
+  @Column(name = "is_published", nullable = false)
   private Boolean isPublished = false;
 
   @OneToMany

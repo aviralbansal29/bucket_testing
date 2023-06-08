@@ -33,9 +33,9 @@ public class ExperimentController {
 
   @RequestMapping(method = RequestMethod.GET, value = "/experiments")
   public ResponseEntity<List<ExperimentModel>> getExperiments(
-      @RequestParam(name = "name", required = false) String nameSubString,
-      @RequestParam(name = "is_published", required = false) Boolean isPublished) {
-    ListServiceResponse<ExperimentModel> details = service.listExperiments(nameSubString, isPublished);
+      @RequestParam(name = "is_published", required = false) Boolean isPublished,
+      @RequestParam(name = "q", required = false) String query) {
+    ListServiceResponse<ExperimentModel> details = service.listExperiments(isPublished, query);
     List<ExperimentModel> content = details.getContent();
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.set("X-Total-Count", Long.toString(details.getCount()));
