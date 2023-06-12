@@ -10,14 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 /**
  * Repository for variants table
  */
+@Repository
 public interface VariantRepository
     extends JpaRepository<VariantModel, Long>, VariantRepositoryCustom {
   @Query("SELECT EXISTS(Select 1 from VariantModel v where v.experiment_id = :experimentId AND LOWER(v.name) = LOWER(:name))")
   boolean existsByExperimentIdAndName(Long experimentId, String name);
+
+  @Query("Select v from VariantModel v where v.experiment_id = :experimentId AND LOWER(v.name) = LOWER(:name)")
+  List<VariantModel> findByExperimentIdAndName(long experimentId, String name);
 
   @Query("SELECT EXISTS(SELECT 1 from VariantModel v WHERE v.id <> :id AND v.experiment_id = :experimentId AND LOWER(v.name) = LOWER(:name))")
   boolean existsByExperimentIdAndNameAndNotId(Long experimentId, String name, Long id);

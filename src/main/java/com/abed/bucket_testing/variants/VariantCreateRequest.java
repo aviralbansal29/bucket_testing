@@ -84,11 +84,12 @@ public class VariantCreateRequest {
   }
 
   private FieldError validateWeightage() {
-    List<VariantModel> controlVariant = variantRepository.findByCriteria("control", experiment_id);
-    if (controlVariant.size() != 0) {
+    List<VariantModel> controlVariant = variantRepository.findByExperimentIdAndName(experiment_id, "control");
+    if (controlVariant.size() != 1) {
       return new FieldError("ExperimentModel", "experiment_id",
           "Control Variant not found");
     }
+    this.controlVariant = controlVariant.get(0);
     byte controlVariantWeigtage = controlVariant.get(0).getWeightage();
     if (weightage > controlVariantWeigtage) {
       return new FieldError("VariantModel", "weightage",

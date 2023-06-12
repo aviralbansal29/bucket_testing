@@ -19,6 +19,16 @@ services:
       - postgres:/var/lib/postgresql/data
     env_file:
       - '.env.docker'
+    command: ["postgres", "-c", "log_statement=all"]
+  redis:
+    image: 'redis:7.0'
+    container_name: bucket_testing_redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/var/lib/redis/data
+    command: redis-server --appendonly yes
 
 volumes:
   postgres:
+  redis:

@@ -63,6 +63,7 @@ public class VariantController {
   public ResponseEntity<VariantModel> updateVariant(@PathVariable("id") long id,
       @Valid @RequestBody VariantUpdateRequest req) throws Exception {
     try {
+      req.setVariantRepository(variantRepository);
       return new ResponseEntity<VariantModel>(
           variantService.updateVariant(id, req), HttpStatus.OK);
     } catch (NotFoundException e) {

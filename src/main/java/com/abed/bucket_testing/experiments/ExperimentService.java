@@ -17,12 +17,14 @@ public class ExperimentService {
   @Autowired
   ExperimentRepository experimentRepository;
 
+  @Autowired
+  VariantService variantService;
+
   public ExperimentModel createExperiment(ExperimentCreateRequest req)
       throws Exception {
     req.Validate();
     ExperimentModel experiment = new ExperimentModel(req.getName(), req.getDescription());
     experimentRepository.save(experiment);
-    VariantService variantService = new VariantService();
     variantService.createControlVariant(experiment.getId());
     return experiment;
   }

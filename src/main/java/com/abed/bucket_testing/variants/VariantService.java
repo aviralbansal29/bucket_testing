@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 public class VariantService {
 
   @Autowired
-  VariantRepository variantRepo;
+  VariantRepository variantRepository;
 
   public void createControlVariant(long id) {
     VariantModel variant = new VariantModel(
         "control", "Auto-created control variant", (byte) 100, id);
-    variantRepo.save(variant);
+    variantRepository.save(variant);
   }
 
   public VariantModel createVariant(VariantCreateRequest variantReq)
@@ -29,22 +29,22 @@ public class VariantService {
     VariantModel variant = new VariantModel(
         variantReq.getName(), variantReq.getDescription(),
         variantReq.getWeightage(), variantReq.getExperiment_id());
-    variantRepo.save(variant);
+    variantRepository.save(variant);
     variantReq.getControlVariant().setWeightage(
         (byte) (variantReq.getControlVariant().getWeightage() -
             variantReq.getWeightage()));
-    variantRepo.save(variantReq.getControlVariant());
+    variantRepository.save(variantReq.getControlVariant());
     return variant;
   }
 
   public ListServiceResponse<VariantModel> listVariants(String query,
       Long experimentId) {
-    List<VariantModel> variantList = variantRepo.findByCriteria(query, experimentId);
+    List<VariantModel> variantList = variantRepository.findByCriteria(query, experimentId);
     return new ListServiceResponse<>(variantList.size(), variantList);
   }
 
   public VariantModel retrienveVariant(long id) throws Exception {
-    Optional<VariantModel> variant = variantRepo.findById(id);
+    Optional<VariantModel> variant = variantRepository.findById(id);
     if (variant.isEmpty()) {
       throw new NotFoundException();
     }
@@ -58,16 +58,19 @@ public class VariantService {
     variant.setDescription(req.getDescription());
     variant.setName(req.getName());
     variant.setWeightage(req.getWeightage());
-    variantRepo.save(variant);
+    variantRepository.save(variant);
+    req.getControlVariant().setWeightage(
+        (byte) (req.getControlVariant().getWeightage() - req.getWeightage()));
+    variantRepository.save(req.getControlVariant());
     return variant;
   }
 
   public VariantModel deleteVariant(long id) throws Exception {
-    Optional<VariantModel> variant = variantRepo.findById(id);
+    Optional<VariantModel> variant = variantRepository.findById(id);
     if (variant.isEmpty()) {
       throw new NotFoundException();
     }
-    variantRepo.deleteById(id);
+    variantRepository.deleteById(id);
     return variant.get();
   }
 }
