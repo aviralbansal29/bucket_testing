@@ -54,12 +54,8 @@ public class UserService {
                                                     long userId) {
     HashMap<String, Long> resp = new HashMap<String, Long>();
     String redisKey = "experiment:" + experimentId;
-    Double variant = redisService.getScore(redisKey, String.valueOf(userId));
-    System.out.println(variant);
-    if (variant.isNaN()) {
-      redisService.addToOrderedSet(redisKey, String.valueOf(userId), 200);
-    }
-    resp.put("variant", variant.longValue());
+    long variant = redisService.getScore(redisKey, userId);
+    resp.put("variant", variant);
     resp.put("experiment", experimentId);
     resp.put("userId", userId);
     return resp;
