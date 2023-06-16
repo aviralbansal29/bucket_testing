@@ -1,5 +1,7 @@
 package com.abed.bucket_testing.variants;
 
+import com.abed.bucket_testing.common.SortDirection;
+import com.abed.bucket_testing.common_services.RedisService;
 import com.abed.bucket_testing.dto.ListServiceResponse;
 import com.abed.bucket_testing.exceptions.InvalidRequestException;
 import java.util.List;
@@ -14,12 +16,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class VariantService {
 
-  @Autowired
-  VariantRepository variantRepository;
+  @Autowired VariantRepository variantRepository;
+
+  @Autowired RedisService redisService;
 
   public void createControlVariant(long id) {
     VariantModel variant = new VariantModel(
-        "control", "Auto-created control variant", (byte) 100, id);
+        "control", "Auto-created control variant", (byte)100, id);
     variantRepository.save(variant);
   }
 
@@ -31,15 +34,16 @@ public class VariantService {
         variantReq.getWeightage(), variantReq.getExperiment_id());
     variantRepository.save(variant);
     variantReq.getControlVariant().setWeightage(
-        (byte) (variantReq.getControlVariant().getWeightage() -
-            variantReq.getWeightage()));
+        (byte)(variantReq.getControlVariant().getWeightage() -
+               variantReq.getWeightage()));
     variantRepository.save(variantReq.getControlVariant());
     return variant;
   }
 
   public ListServiceResponse<VariantModel> listVariants(String query,
-      Long experimentId) {
-    List<VariantModel> variantList = variantRepository.findByCriteria(query, experimentId);
+                                                        Long experimentId) {
+    List<VariantModel> variantList = variantRepository.findByCriteria(
+        query, experimentId, "id", SortDirection.ASCENDING, null);
     return new ListServiceResponse<>(variantList.size(), variantList);
   }
 
@@ -60,7 +64,7 @@ public class VariantService {
     variant.setWeightage(req.getWeightage());
     variantRepository.save(variant);
     req.getControlVariant().setWeightage(
-        (byte) (req.getControlVariant().getWeightage() - req.getWeightage()));
+        (byte)(req.getControlVariant().getWeightage() - req.getWeightage()));
     variantRepository.save(req.getControlVariant());
     return variant;
   }
@@ -72,5 +76,31 @@ public class VariantService {
     }
     variantRepository.deleteById(id);
     return variant.get();
+  }
+
+  public VariantModel assignVariant(long experimentId, long userId)
+      throws Exception {
+    List<VariantModel> variants = getVariantListWithWeightage(experimentId);
+    String expKey = "experiment:" + experimentId;
+    long total = redisService.getCount(expKey);
+    for (VariantModel variant : variants) {
+      long count = redisService.getScoreCount("experiment:" + experimentId,
+                                              variant.getId());
+      if ((count * 100 / total) <= variant.getWeightage()) {
+        redisService.addData(expKey, userId, variant.getId());
+        return variant;
+      }
+    }
+    throw new Exception("Invalid Data");
+  }
+
+  private List<VariantModel> getVariantListWithWeightage(long experimentId)
+      throws NotFoundException {
+    List<VariantModel> variants =
+        variantRepository.findByCriteria(null, experimentId, null, null, true);
+    if (variants.size() < 1) {
+      throw new NotFoundException();
+    }
+    return variants;
   }
 }

@@ -22,4 +22,13 @@ public class RedisService {
     }
     return (long)score.doubleValue();
   }
+
+  public long getScoreCount(String key, long score) {
+    Long count = redisTemplate.opsForZSet().count(key, score, score);
+    return count;
+  }
+
+  public long getCount(String key) {
+    return redisTemplate.opsForZSet().card(key);
+  }
 }
